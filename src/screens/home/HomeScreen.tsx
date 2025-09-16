@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,12 +8,36 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootState } from '../../store';
+import { RootStackParamList } from '../../types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import CityPicker from '../../components/common/CityPicker';
+import { NotificationService } from '../../services/NotificationService';
+
+type HomeScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Main'
+>;
 
 const HomeScreen: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const { selectedCity } = useSelector((state: RootState) => state.location);
+  const { unreadCount } = useSelector((state: RootState) => state.notifications);
+  const [showCityPicker, setShowCityPicker] = useState(false);
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
+  useEffect(() => {
+    // Initialize notifications
+    const notificationService = NotificationService.getInstance();
+    notificationService.initialize();
+
+    // Create demo notifications after a delay (for testing)
+    setTimeout(() => {
+      notificationService.createDemoNotifications();
+    }, 5000);
+  }, []);
 
   const serviceCategories = [
     { id: '1', name: 'Plumbing', icon: 'plumbing', color: '#FF6B6B' },
@@ -29,18 +53,26 @@ const HomeScreen: React.FC = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.locationContainer}>
+          <TouchableOpacity 
+            style={styles.locationContainer}
+            onPress={() => setShowCityPicker(true)}
+          >
             <Icon name="location-on" size={20} color="#007AFF" />
             <Text style={styles.locationText}>
               {selectedCity?.name || 'Select Location'}
             </Text>
             <Icon name="keyboard-arrow-down" size={20} color="#666666" />
-          </View>
-          <TouchableOpacity style={styles.notificationButton}>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.notificationButton}
+            onPress={() => navigation.navigate('Notifications')}
+          >
             <Icon name="notifications" size={24} color="#333333" />
-            <View style={styles.notificationBadge}>
-              <Text style={styles.badgeText}>3</Text>
-            </View>
+            {unreadCount > 0 && (
+              <View style={styles.notificationBadge}>
+                <Text style={styles.badgeText}>{unreadCount}</Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -125,6 +157,12 @@ const HomeScreen: React.FC = () => {
         {/* Bottom Spacing */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
+
+      {/* City Picker Modal */}
+      <CityPicker 
+        visible={showCityPicker}
+        onClose={() => setShowCityPicker(false)}
+      />
     </SafeAreaView>
   );
 };
