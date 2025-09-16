@@ -15,6 +15,7 @@ import ProfileScreen from '../screens/profile/ProfileScreen';
 
 // Additional screens
 import ServiceDetailsScreen from '../screens/services/ServiceDetailsScreen';
+import ServicesListScreen from '../screens/services/ServicesListScreen';
 import StoreDetailsScreen from '../screens/stores/StoreDetailsScreen';
 import ProductDetailsScreen from '../screens/stores/ProductDetailsScreen';
 import OrderDetailsScreen from '../screens/orders/OrderDetailsScreen';
@@ -88,6 +89,11 @@ const MainNavigator: React.FC = () => {
         name="ServiceDetails" 
         component={ServiceDetailsScreen}
         options={{ title: 'Service Details' }}
+      />
+      <Stack.Screen 
+        name="ServicesList" 
+        component={ServicesListScreen}
+        options={{ headerShown: false }}
       />
       <Stack.Screen 
         name="StoreDetails" 

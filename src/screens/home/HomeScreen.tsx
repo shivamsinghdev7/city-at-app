@@ -42,7 +42,7 @@ const HomeScreen: React.FC = () => {
   }, []);
 
   const handleServicePress = (service: any) => {
-    navigation.navigate('Services', { category: service.name });
+    navigation.navigate('ServicesList', { category: service.name });
   };
 
   const serviceCategories = [

@@ -368,6 +368,7 @@ export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
   ServiceDetails: { serviceId: string };
+  ServicesList: { category: string };
   StoreDetails: { storeId: string };
   ProductDetails: { productId: string };
   OrderDetails: { orderId: string };
