@@ -35,7 +35,7 @@ const LoginScreen: React.FC = () => {
 
   const validatePhoneNumber = (phone: string) => {
     const phoneRegex = /^[6-9]\d{9}$/;
-    return phoneRegex.test(phone);
+    return phoneRegex.test(phone.trim());
   };
 
   const handleLogin = async () => {
