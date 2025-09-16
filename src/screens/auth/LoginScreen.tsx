@@ -9,11 +9,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useDispatch } from 'react-redux';
-import { loginStart, loginFailure } from '../../store/slices/authSlice';
+import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
+import { useGoogleLoginMutation, useFacebookLoginMutation } from '../../store/api/apiSlice';
+import { oauthService } from '../../services';
 
 type AuthStackParamList = {
   Login: undefined;
@@ -30,8 +33,13 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<
 const LoginScreen: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<'google' | 'facebook' | null>(null);
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const dispatch = useDispatch();
+  
+  // OAuth mutations
+  const [googleLogin] = useGoogleLoginMutation();
+  const [facebookLogin] = useFacebookLoginMutation();
 
   const validatePhoneNumber = (phone: string) => {
     const phoneRegex = /^[6-9]\d{9}$/;
@@ -64,12 +72,57 @@ const LoginScreen: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    Alert.alert('Coming Soon', 'Google login will be available soon');
+  const handleGoogleLogin = async () => {
+    setOauthLoading('google');
+    dispatch(loginStart());
+
+    try {
+      const { tokens } = await oauthService.signInWithGoogle();
+      
+      const result = await googleLogin({
+        accessToken: tokens.accessToken,
+        idToken: tokens.idToken || tokens.accessToken,
+      }).unwrap();
+
+      if (result.success && result.data) {
+        dispatch(loginSuccess(result.data));
+        Alert.alert('Success', 'Logged in successfully with Google!');
+      } else {
+        throw new Error(result.error || 'Google login failed');
+      }
+    } catch (error: any) {
+      console.error('Google login error:', error);
+      dispatch(loginFailure(error.message || 'Google login failed'));
+      Alert.alert('Error', error.message || 'Google login failed. Please try again.');
+    } finally {
+      setOauthLoading(null);
+    }
   };
 
-  const handleFacebookLogin = () => {
-    Alert.alert('Coming Soon', 'Facebook login will be available soon');
+  const handleFacebookLogin = async () => {
+    setOauthLoading('facebook');
+    dispatch(loginStart());
+
+    try {
+      const { tokens } = await oauthService.signInWithFacebook();
+      
+      const result = await facebookLogin({
+        accessToken: tokens.accessToken,
+      }).unwrap();
+
+      if (result.success && result.data) {
+        dispatch(loginSuccess(result.data));
+        Alert.alert('Success', 'Logged in successfully with Facebook!');
+      } else {
+        throw new Error(result.error || 'Facebook login failed');
+      }
+    } catch (error: any) {
+      console.error('Facebook login error:', error);
+      dispatch(loginFailure(error.message || 'Facebook login failed'));
+      Alert.alert('Error', error.message || 'Facebook login failed. Please try again.');
+    } finally {
+      setOauthLoading(null);
+    }
   };
 
   return (
@@ -116,17 +169,37 @@ const LoginScreen: React.FC = () => {
           </View>
 
           <TouchableOpacity
-            style={styles.socialButton}
+            style={[styles.socialButton, oauthLoading === 'google' && styles.disabledButton]}
             onPress={handleGoogleLogin}
+            disabled={oauthLoading !== null}
           >
-            <Text style={styles.socialButtonText}>Continue with Google</Text>
+            {oauthLoading === 'google' ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color="#333333" />
+                <Text style={[styles.socialButtonText, styles.loadingText]}>
+                  Signing in...
+                </Text>
+              </View>
+            ) : (
+              <Text style={styles.socialButtonText}>Continue with Google</Text>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.socialButton}
+            style={[styles.socialButton, oauthLoading === 'facebook' && styles.disabledButton]}
             onPress={handleFacebookLogin}
+            disabled={oauthLoading !== null}
           >
-            <Text style={styles.socialButtonText}>Continue with Facebook</Text>
+            {oauthLoading === 'facebook' ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color="#333333" />
+                <Text style={[styles.socialButtonText, styles.loadingText]}>
+                  Signing in...
+                </Text>
+              </View>
+            ) : (
+              <Text style={styles.socialButtonText}>Continue with Facebook</Text>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -242,6 +315,14 @@ const styles = StyleSheet.create({
     color: '#333333',
     fontSize: 16,
     fontWeight: '500',
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginLeft: 8,
   },
   footer: {
     flexDirection: 'row',

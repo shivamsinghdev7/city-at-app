@@ -10,6 +10,9 @@ export interface User {
   preferences: UserPreferences;
   createdAt: Date;
   updatedAt: Date;
+  // OAuth provider information
+  provider?: 'phone' | 'google' | 'facebook';
+  providerId?: string;
 }
 
 export interface Address {
@@ -58,6 +61,10 @@ export interface LoginRequest {
   email?: string;
   password?: string;
   otp?: string;
+  // OAuth fields
+  provider?: 'google' | 'facebook';
+  accessToken?: string;
+  idToken?: string;
 }
 
 export interface RegisterRequest {
@@ -66,6 +73,25 @@ export interface RegisterRequest {
   email?: string;
   role: User['role'];
   password?: string;
+  // OAuth fields
+  provider?: 'google' | 'facebook';
+  accessToken?: string;
+  idToken?: string;
+}
+
+// OAuth specific types
+export interface OAuthUserInfo {
+  id: string;
+  name: string;
+  email: string;
+  profilePhoto?: string;
+  provider: 'google' | 'facebook';
+}
+
+export interface OAuthTokens {
+  accessToken: string;
+  idToken?: string;
+  refreshToken?: string;
 }
 
 // Service Provider Types

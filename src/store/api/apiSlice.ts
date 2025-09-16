@@ -92,6 +92,31 @@ export const apiSlice = createApi({
       }),
     }),
 
+    // OAuth endpoints
+    googleLogin: builder.mutation<
+      ApiResponse<{ user: User; token: string; refreshToken: string }>,
+      { accessToken: string; idToken: string }
+    >({
+      query: (data) => ({
+        url: '/auth/google',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    facebookLogin: builder.mutation<
+      ApiResponse<{ user: User; token: string; refreshToken: string }>,
+      { accessToken: string }
+    >({
+      query: (data) => ({
+        url: '/auth/facebook',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
     // User endpoints
     getProfile: builder.query<ApiResponse<User>, void>({
       query: () => '/users/profile',
@@ -318,6 +343,8 @@ export const {
   useRegisterMutation,
   useVerifyOtpMutation,
   useRefreshTokenMutation,
+  useGoogleLoginMutation,
+  useFacebookLoginMutation,
 
   // User
   useGetProfileQuery,

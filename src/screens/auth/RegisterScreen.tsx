@@ -9,9 +9,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useDispatch } from 'react-redux';
+import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
+import { useGoogleLoginMutation, useFacebookLoginMutation } from '../../store/api/apiSlice';
+import { oauthService } from '../../services';
 
 type AuthStackParamList = {
   Login: undefined;
@@ -32,7 +37,13 @@ const RegisterScreen: React.FC = () => {
     email: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<'google' | 'facebook' | null>(null);
   const navigation = useNavigation<RegisterScreenNavigationProp>();
+  const dispatch = useDispatch();
+  
+  // OAuth mutations
+  const [googleLogin] = useGoogleLoginMutation();
+  const [facebookLogin] = useFacebookLoginMutation();
 
   const validateForm = () => {
     if (!formData.name.trim()) {
@@ -70,6 +81,59 @@ const RegisterScreen: React.FC = () => {
 
   const updateFormData = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleGoogleSignup = async () => {
+    setOauthLoading('google');
+    dispatch(loginStart());
+
+    try {
+      const { tokens } = await oauthService.signInWithGoogle();
+      
+      const result = await googleLogin({
+        accessToken: tokens.accessToken,
+        idToken: tokens.idToken || tokens.accessToken,
+      }).unwrap();
+
+      if (result.success && result.data) {
+        dispatch(loginSuccess(result.data));
+        Alert.alert('Success', 'Account created successfully with Google!');
+      } else {
+        throw new Error(result.error || 'Google signup failed');
+      }
+    } catch (error: any) {
+      console.error('Google signup error:', error);
+      dispatch(loginFailure(error.message || 'Google signup failed'));
+      Alert.alert('Error', error.message || 'Google signup failed. Please try again.');
+    } finally {
+      setOauthLoading(null);
+    }
+  };
+
+  const handleFacebookSignup = async () => {
+    setOauthLoading('facebook');
+    dispatch(loginStart());
+
+    try {
+      const { tokens } = await oauthService.signInWithFacebook();
+      
+      const result = await facebookLogin({
+        accessToken: tokens.accessToken,
+      }).unwrap();
+
+      if (result.success && result.data) {
+        dispatch(loginSuccess(result.data));
+        Alert.alert('Success', 'Account created successfully with Facebook!');
+      } else {
+        throw new Error(result.error || 'Facebook signup failed');
+      }
+    } catch (error: any) {
+      console.error('Facebook signup error:', error);
+      dispatch(loginFailure(error.message || 'Facebook signup failed'));
+      Alert.alert('Error', error.message || 'Facebook signup failed. Please try again.');
+    } finally {
+      setOauthLoading(null);
+    }
   };
 
   return (
@@ -137,6 +201,46 @@ const RegisterScreen: React.FC = () => {
             <Text style={styles.termsLink}>Terms of Service</Text> and{' '}
             <Text style={styles.termsLink}>Privacy Policy</Text>
           </Text>
+
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          <TouchableOpacity
+            style={[styles.socialButton, oauthLoading === 'google' && styles.disabledButton]}
+            onPress={handleGoogleSignup}
+            disabled={oauthLoading !== null}
+          >
+            {oauthLoading === 'google' ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color="#333333" />
+                <Text style={[styles.socialButtonText, styles.loadingText]}>
+                  Creating account...
+                </Text>
+              </View>
+            ) : (
+              <Text style={styles.socialButtonText}>Continue with Google</Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.socialButton, oauthLoading === 'facebook' && styles.disabledButton]}
+            onPress={handleFacebookSignup}
+            disabled={oauthLoading !== null}
+          >
+            {oauthLoading === 'facebook' ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color="#333333" />
+                <Text style={[styles.socialButtonText, styles.loadingText]}>
+                  Creating account...
+                </Text>
+              </View>
+            ) : (
+              <Text style={styles.socialButtonText}>Continue with Facebook</Text>
+            )}
+          </TouchableOpacity>
         </View>
 
         <View style={styles.footer}>
@@ -242,6 +346,42 @@ const styles = StyleSheet.create({
   termsLink: {
     color: '#007AFF',
     fontWeight: '600',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 24,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E0E0E0',
+  },
+  dividerText: {
+    marginHorizontal: 16,
+    color: '#666666',
+    fontSize: 14,
+  },
+  socialButton: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  socialButtonText: {
+    color: '#333333',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginLeft: 8,
   },
   footer: {
     flexDirection: 'row',
