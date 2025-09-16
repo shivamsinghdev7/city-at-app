@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
 import { RootStackParamList } from '../types';
 
 type SplashScreenNavigationProp = NativeStackNavigationProp<
@@ -17,16 +19,22 @@ type SplashScreenNavigationProp = NativeStackNavigationProp<
 
 const SplashScreen: React.FC = () => {
   const navigation = useNavigation<SplashScreenNavigationProp>();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Check if user has seen onboarding
-      // For now, navigate to onboarding
-      navigation.replace('Onboarding');
+      // Check authentication state and navigate accordingly
+      if (isAuthenticated) {
+        navigation.replace('Main');
+      } else {
+        // Check if user has seen onboarding
+        // For now, navigate to onboarding
+        navigation.replace('Onboarding');
+      }
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [navigation]);
+  }, [navigation, isAuthenticated]);
 
   return (
     <View style={styles.container}>
