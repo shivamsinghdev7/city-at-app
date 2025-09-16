@@ -180,13 +180,17 @@ const CityPicker: React.FC<CityPickerProps> = ({ visible, onClose }) => {
     <TouchableOpacity
       style={styles.cityItem}
       onPress={() => handleCitySelect(item)}
+      activeOpacity={0.7}
     >
       <View style={styles.cityInfo}>
         <Text style={styles.cityName}>{item.name}</Text>
         <Text style={styles.cityState}>{item.state}, {item.country}</Text>
+        {!item.isServiceable && (
+          <Text style={styles.notServiceable}>Not serviceable</Text>
+        )}
       </View>
-      {!item.isServiceable && (
-        <Text style={styles.notServiceable}>Not serviceable</Text>
+      {item.isServiceable && (
+        <Icon name="chevron-right" size={20} color="#BDC3C7" />
       )}
     </TouchableOpacity>
   );
@@ -201,32 +205,35 @@ const CityPicker: React.FC<CityPickerProps> = ({ visible, onClose }) => {
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={onClose}>
-            <Icon name="close" size={24} color="#333333" />
+          <Text style={styles.headerTitle}>Choose Location</Text>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Icon name="close" size={24} color="#636E72" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Select City</Text>
-          <View style={styles.placeholder} />
         </View>
 
         {/* Detect Location Button */}
         <TouchableOpacity
-          style={styles.detectLocationButton}
+          style={[
+            styles.detectLocationButton,
+            isDetectingLocation && styles.detectLocationButtonDisabled
+          ]}
           onPress={handleDetectLocation}
           disabled={isDetectingLocation}
+          activeOpacity={0.8}
         >
           <Icon 
             name="my-location" 
             size={20} 
-            color={isDetectingLocation ? "#CCCCCC" : "#007AFF"} 
+            color={isDetectingLocation ? "#BDC3C7" : "#F39C12"} 
           />
           <Text style={[
             styles.detectLocationText,
             isDetectingLocation && styles.disabledText
           ]}>
-            {isDetectingLocation ? 'Detecting...' : 'Detect my location'}
+            {isDetectingLocation ? 'Detecting your location...' : 'Use current location'}
           </Text>
           {isDetectingLocation && (
-            <ActivityIndicator size="small" color="#007AFF" />
+            <ActivityIndicator size="small" color="#F39C12" />
           )}
         </TouchableOpacity>
 
@@ -289,59 +296,75 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    paddingTop: 20,
+    paddingBottom: 16,
+    backgroundColor: '#FFFFFF',
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333333',
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#2D3436',
+    flex: 1,
   },
-  placeholder: {
-    width: 24,
+  closeButton: {
+    padding: 4,
   },
   detectLocationButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    marginHorizontal: 20,
+    marginBottom: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    backgroundColor: '#FFF7E8',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#F39C12',
+  },
+  detectLocationButtonDisabled: {
+    backgroundColor: '#F8F9FA',
+    borderColor: '#BDC3C7',
   },
   detectLocationText: {
     marginLeft: 12,
     fontSize: 16,
-    color: '#007AFF',
+    color: '#F39C12',
     flex: 1,
+    fontWeight: '600',
   },
   disabledText: {
-    color: '#CCCCCC',
+    color: '#BDC3C7',
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    marginHorizontal: 20,
+    marginBottom: 24,
+    paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
   },
   searchInput: {
     flex: 1,
     marginLeft: 12,
     fontSize: 16,
-    color: '#333333',
+    color: '#2D3436',
   },
   section: {
     flex: 1,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#666666',
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#636E72',
     paddingHorizontal: 20,
-    paddingVertical: 12,
-    backgroundColor: '#F8F9FA',
+    paddingVertical: 8,
+    backgroundColor: '#FAFBFC',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   cityList: {
     flex: 1,
@@ -350,27 +373,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 18,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: '#F1F3F4',
+    backgroundColor: '#FFFFFF',
   },
   cityInfo: {
     flex: 1,
   },
   cityName: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#333333',
+    fontWeight: '600',
+    color: '#2D3436',
     marginBottom: 4,
   },
   cityState: {
     fontSize: 14,
-    color: '#666666',
+    color: '#636E72',
   },
   notServiceable: {
     fontSize: 12,
-    color: '#FF6B6B',
-    fontWeight: '500',
+    color: '#E17055',
+    fontWeight: '600',
+    backgroundColor: '#FFF2F0',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginTop: 4,
   },
 });
 

@@ -382,7 +382,7 @@ export type RootStackParamList = {
 
 export type MainTabParamList = {
   Home: undefined;
-  Services: undefined;
+  Services: { category?: string };
   Stores: undefined;
   Orders: undefined;
   Profile: undefined;
