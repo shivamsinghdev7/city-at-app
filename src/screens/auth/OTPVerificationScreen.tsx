@@ -15,7 +15,7 @@ type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
   OTPVerification: { phone: string };
-  RoleSelection: undefined;
+  RoleSelection: { phone: string };
 };
 
 type OTPVerificationScreenNavigationProp = NativeStackNavigationProp<
@@ -65,7 +65,7 @@ const OTPVerificationScreen: React.FC = () => {
       // In a real app, this would verify OTP with backend
       // For demo purposes, accept any 6-digit OTP
       if (otp === '123456' || otp.length === 6) {
-        navigation.navigate('RoleSelection');
+        navigation.navigate('RoleSelection', { phone });
       } else {
         Alert.alert('Error', 'Invalid OTP. Please try again.');
       }

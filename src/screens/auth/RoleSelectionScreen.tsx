@@ -7,6 +7,8 @@ import {
   Alert,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { useRoute } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 import { loginSuccess } from '../../store/slices/authSlice';
 import { User } from '../../types';
 
@@ -17,6 +19,18 @@ interface RoleOption {
   icon: string;
   role: User['role'];
 }
+
+type AuthStackParamList = {
+  Login: undefined;
+  Register: undefined;
+  OTPVerification: { phone: string };
+  RoleSelection: { phone: string };
+};
+
+type RoleSelectionScreenRouteProp = RouteProp<
+  AuthStackParamList,
+  'RoleSelection'
+>;
 
 const roleOptions: RoleOption[] = [
   {
@@ -46,6 +60,9 @@ const RoleSelectionScreen: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<User['role'] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  const route = useRoute<RoleSelectionScreenRouteProp>();
+  
+  const { phone } = route.params;
 
   const handleRoleSelection = (role: User['role']) => {
     setSelectedRole(role);
@@ -64,7 +81,7 @@ const RoleSelectionScreen: React.FC = () => {
       const mockUser: User = {
         id: '1',
         name: 'Demo User',
-        phone: '9876543210',
+        phone: phone,
         role: selectedRole,
         addresses: [],
         preferences: {
@@ -89,7 +106,8 @@ const RoleSelectionScreen: React.FC = () => {
         refreshToken: 'mock-refresh-token',
       }));
 
-      Alert.alert('Success', 'Account created successfully!');
+      // Navigation will happen automatically via RootNavigator 
+      // when isAuthenticated becomes true
     } catch (error) {
       Alert.alert('Error', 'Failed to complete setup. Please try again.');
     } finally {
