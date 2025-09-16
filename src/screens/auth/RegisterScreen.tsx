@@ -43,7 +43,7 @@ const RegisterScreen: React.FC = () => {
       Alert.alert('Error', 'Please enter your phone number');
       return false;
     }
-    if (!/^[6-9]\d{9}$/.test(formData.phone)) {
+    if (!/^[6-9]\d{9}$/.test(formData.phone.trim())) {
       Alert.alert('Error', 'Please enter a valid 10-digit phone number');
       return false;
     }
