@@ -11,7 +11,7 @@ type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
   OTPVerification: { phone: string };
-  RoleSelection: undefined;
+  RoleSelection: { phone: string };
 };
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
