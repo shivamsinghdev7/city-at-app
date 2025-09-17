@@ -12,6 +12,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { RootStackParamList, MainTabParamList } from '../../types';
 
 type ServicesNavigationProp = NativeStackNavigationProp<
@@ -29,6 +30,7 @@ interface ServiceCategory {
   color: string;
   providerCount: number;
   basePrice: string;
+  iconFamily?: string;
 }
 
 interface ServiceProvider {
@@ -62,55 +64,61 @@ const ServicesScreen: React.FC = () => {
       id: '1',
       name: 'Plumbing',
       description: 'Pipes, taps, drainage',
-      icon: 'water-drop',
+      icon: 'pipe-wrench',
       color: '#3498DB',
       providerCount: 45,
       basePrice: '₹299',
+      iconFamily: 'MC',
     },
     {
       id: '2',
       name: 'Electrical',
       description: 'Wiring, switches, repairs',
-      icon: 'electric-bolt',
+      icon: 'lightning-bolt',
       color: '#F39C12',
       providerCount: 38,
       basePrice: '₹199',
+      iconFamily: 'MC',
     },
     {
       id: '3',
       name: 'Cleaning',
       description: 'Home, office cleaning',
-      icon: 'cleaning-services',
+      icon: 'broom',
       color: '#2ECC71',
       providerCount: 67,
       basePrice: '₹399',
+      iconFamily: 'MC',
     },
     {
       id: '4',
       name: 'Painting',
       description: 'Interior, exterior painting',
-      icon: 'brush',
+      icon: 'format-paint',
       color: '#E74C3C',
       providerCount: 23,
       basePrice: '₹599',
+      iconFamily: 'MC',
     },
     {
       id: '5',
       name: 'Carpentry',
       description: 'Furniture, repairs',
-      icon: 'handyman',
+      icon: 'hammer-screwdriver',
       color: '#8E44AD',
       providerCount: 31,
       basePrice: '₹499',
+      iconFamily: 'MC',
     },
     {
       id: '6',
       name: 'AC Repair',
       description: 'Installation, servicing',
-      icon: 'air',
+      icon: 'air-conditioner',
       color: '#1ABC9C',
       providerCount: 29,
       basePrice: '₹349',
+      iconFamily: 'MC',
     },
   ];
 
@@ -169,7 +177,11 @@ const ServicesScreen: React.FC = () => {
       onPress={() => setSelectedCategory(selectedCategory === item.name ? null : item.name)}
     >
       <View style={[styles.categoryIcon, { backgroundColor: item.color }]}>
-        <Icon name={item.icon} size={24} color="#FFFFFF" />
+        {item.iconFamily === 'MC' ? (
+          <MCIcon name={item.icon} size={24} color="#FFFFFF" />
+        ) : (
+          <Icon name={item.icon} size={24} color="#FFFFFF" />
+        )}
       </View>
       <View style={styles.categoryInfo}>
         <Text style={styles.categoryName}>{item.name}</Text>

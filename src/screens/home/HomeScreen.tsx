@@ -15,6 +15,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootState } from '../../store';
 import { MainTabParamList, RootStackParamList } from '../../types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CityPicker from '../../components/common/CityPicker';
 import { NotificationService } from '../../services/NotificationService';
 
@@ -46,12 +47,12 @@ const HomeScreen: React.FC = () => {
   };
 
   const serviceCategories = [
-    { id: '1', name: 'Plumbing', icon: 'water-drop', color: '#3498DB' },
-    { id: '2', name: 'Electrical', icon: 'electric-bolt', color: '#F39C12' },
-    { id: '3', name: 'Cleaning', icon: 'cleaning-services', color: '#2ECC71' },
-    { id: '4', name: 'Painting', icon: 'brush', color: '#E74C3C' },
-    { id: '5', name: 'Carpentry', icon: 'handyman', color: '#8E44AD' },
-    { id: '6', name: 'AC Repair', icon: 'air', color: '#1ABC9C' },
+    { id: '1', name: 'Plumbing', icon: 'pipe-wrench', color: '#3498DB', iconFamily: 'MC' },
+    { id: '2', name: 'Electrical', icon: 'lightning-bolt', color: '#F39C12', iconFamily: 'MC' },
+    { id: '3', name: 'Cleaning', icon: 'broom', color: '#2ECC71', iconFamily: 'MC' },
+    { id: '4', name: 'Painting', icon: 'format-paint', color: '#E74C3C', iconFamily: 'MC' },
+    { id: '5', name: 'Carpentry', icon: 'hammer-screwdriver', color: '#8E44AD', iconFamily: 'MC' },
+    { id: '6', name: 'AC Repair', icon: 'air-conditioner', color: '#1ABC9C', iconFamily: 'MC' },
   ];
 
   return (
@@ -113,7 +114,11 @@ const HomeScreen: React.FC = () => {
                 activeOpacity={0.8}
               >
                 <View style={[styles.serviceIcon, { backgroundColor: service.color }]}>
-                  <Icon name={service.icon} size={28} color="#FFFFFF" />
+                  {service.iconFamily === 'MC' ? (
+                    <MCIcon name={service.icon} size={28} color="#FFFFFF" />
+                  ) : (
+                    <Icon name={service.icon} size={28} color="#FFFFFF" />
+                  )}
                 </View>
                 <Text style={styles.serviceName}>{service.name}</Text>
               </TouchableOpacity>
