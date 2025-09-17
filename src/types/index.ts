@@ -368,6 +368,7 @@ export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
   ServiceDetails: { serviceId: string };
+  ServicesList: { category: string };
   StoreDetails: { storeId: string };
   ProductDetails: { productId: string };
   OrderDetails: { orderId: string };
@@ -382,7 +383,7 @@ export type RootStackParamList = {
 
 export type MainTabParamList = {
   Home: undefined;
-  Services: undefined;
+  Services: { category?: string };
   Stores: undefined;
   Orders: undefined;
   Profile: undefined;

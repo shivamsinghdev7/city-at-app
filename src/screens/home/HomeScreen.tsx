@@ -9,16 +9,18 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootState } from '../../store';
-import { RootStackParamList } from '../../types';
+import { MainTabParamList, RootStackParamList } from '../../types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import CityPicker from '../../components/common/CityPicker';
 import { NotificationService } from '../../services/NotificationService';
 
-type HomeScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Main'
+type HomeScreenNavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<MainTabParamList, 'Home'>,
+  NativeStackNavigationProp<RootStackParamList>
 >;
 
 const HomeScreen: React.FC = () => {
@@ -39,13 +41,17 @@ const HomeScreen: React.FC = () => {
     }, 5000);
   }, []);
 
+  const handleServicePress = (service: any) => {
+    navigation.navigate('ServicesList', { category: service.name });
+  };
+
   const serviceCategories = [
-    { id: '1', name: 'Plumbing', icon: 'plumbing', color: '#FF6B6B' },
-    { id: '2', name: 'Electrical', icon: 'electrical-services', color: '#4ECDC4' },
-    { id: '3', name: 'Cleaning', icon: 'cleaning-services', color: '#45B7D1' },
-    { id: '4', name: 'Painting', icon: 'format-paint', color: '#96CEB4' },
-    { id: '5', name: 'Carpentry', icon: 'carpenter', color: '#FFEAA7' },
-    { id: '6', name: 'AC Repair', icon: 'ac-unit', color: '#DDA0DD' },
+    { id: '1', name: 'Plumbing', icon: 'water-drop', color: '#3498DB' },
+    { id: '2', name: 'Electrical', icon: 'electric-bolt', color: '#F39C12' },
+    { id: '3', name: 'Cleaning', icon: 'cleaning-services', color: '#2ECC71' },
+    { id: '4', name: 'Painting', icon: 'brush', color: '#E74C3C' },
+    { id: '5', name: 'Carpentry', icon: 'handyman', color: '#8E44AD' },
+    { id: '6', name: 'AC Repair', icon: 'air', color: '#1ABC9C' },
   ];
 
   return (
@@ -100,7 +106,12 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.sectionTitle}>Quick Services</Text>
           <View style={styles.servicesGrid}>
             {serviceCategories.map((service) => (
-              <TouchableOpacity key={service.id} style={styles.serviceCard}>
+              <TouchableOpacity 
+                key={service.id} 
+                style={styles.serviceCard}
+                onPress={() => handleServicePress(service)}
+                activeOpacity={0.8}
+              >
                 <View style={[styles.serviceIcon, { backgroundColor: service.color }]}>
                   <Icon name={service.icon} size={28} color="#FFFFFF" />
                 </View>
@@ -170,18 +181,28 @@ const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F8F9FA',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 20,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#F8F9FA',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
   },
   locationText: {
     marginLeft: 8,
@@ -192,6 +213,9 @@ const styles = StyleSheet.create({
   },
   notificationButton: {
     position: 'relative',
+    backgroundColor: '#F8F9FA',
+    padding: 8,
+    borderRadius: 20,
   },
   notificationBadge: {
     position: 'absolute',
@@ -226,12 +250,17 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFFFFF',
     marginHorizontal: 20,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: 14,
+    borderRadius: 16,
     marginBottom: 32,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
   },
   searchPlaceholder: {
     flex: 1,
@@ -267,15 +296,21 @@ const styles = StyleSheet.create({
   serviceCard: {
     width: '33.33%',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
+    paddingHorizontal: 8,
   },
   serviceIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 64,
+    height: 64,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
   },
   serviceName: {
     fontSize: 14,
@@ -284,16 +319,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   featuredCard: {
-    width: 160,
+    width: 170,
     marginLeft: 20,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   featuredImage: {
-    height: 80,
-    backgroundColor: '#E3F2FD',
-    borderRadius: 8,
+    height: 90,
+    backgroundColor: '#F0F8FF',
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
@@ -315,16 +355,21 @@ const styles = StyleSheet.create({
     color: '#007AFF',
   },
   storeCard: {
-    width: 160,
+    width: 170,
     marginLeft: 20,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   storeImage: {
-    height: 80,
-    backgroundColor: '#E8F5E8',
-    borderRadius: 8,
+    height: 90,
+    backgroundColor: '#F0FFF0',
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,

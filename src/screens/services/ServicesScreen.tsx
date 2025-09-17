@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,15 +8,18 @@ import {
   SafeAreaView,
   TextInput,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { RootStackParamList } from '../../types';
+import { RootStackParamList, MainTabParamList } from '../../types';
 
 type ServicesNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'Main'
 >;
+
+type ServicesRouteProp = RouteProp<MainTabParamList, 'Services'>;
 
 interface ServiceCategory {
   id: string;
@@ -45,14 +48,22 @@ const ServicesScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const navigation = useNavigation<ServicesNavigationProp>();
+  const route = useRoute<ServicesRouteProp>();
+
+  useEffect(() => {
+    // If category is passed from navigation, select it
+    if (route.params?.category) {
+      setSelectedCategory(route.params.category);
+    }
+  }, [route.params?.category]);
 
   const serviceCategories: ServiceCategory[] = [
     {
       id: '1',
       name: 'Plumbing',
       description: 'Pipes, taps, drainage',
-      icon: 'plumbing',
-      color: '#FF6B6B',
+      icon: 'water-drop',
+      color: '#3498DB',
       providerCount: 45,
       basePrice: '₹299',
     },
@@ -60,8 +71,8 @@ const ServicesScreen: React.FC = () => {
       id: '2',
       name: 'Electrical',
       description: 'Wiring, switches, repairs',
-      icon: 'electrical-services',
-      color: '#4ECDC4',
+      icon: 'electric-bolt',
+      color: '#F39C12',
       providerCount: 38,
       basePrice: '₹199',
     },
@@ -70,7 +81,7 @@ const ServicesScreen: React.FC = () => {
       name: 'Cleaning',
       description: 'Home, office cleaning',
       icon: 'cleaning-services',
-      color: '#45B7D1',
+      color: '#2ECC71',
       providerCount: 67,
       basePrice: '₹399',
     },
@@ -78,8 +89,8 @@ const ServicesScreen: React.FC = () => {
       id: '4',
       name: 'Painting',
       description: 'Interior, exterior painting',
-      icon: 'format-paint',
-      color: '#96CEB4',
+      icon: 'brush',
+      color: '#E74C3C',
       providerCount: 23,
       basePrice: '₹599',
     },
@@ -87,8 +98,8 @@ const ServicesScreen: React.FC = () => {
       id: '5',
       name: 'Carpentry',
       description: 'Furniture, repairs',
-      icon: 'carpenter',
-      color: '#FFEAA7',
+      icon: 'handyman',
+      color: '#8E44AD',
       providerCount: 31,
       basePrice: '₹499',
     },
@@ -96,8 +107,8 @@ const ServicesScreen: React.FC = () => {
       id: '6',
       name: 'AC Repair',
       description: 'Installation, servicing',
-      icon: 'ac-unit',
-      color: '#DDA0DD',
+      icon: 'air',
+      color: '#1ABC9C',
       providerCount: 29,
       basePrice: '₹349',
     },
