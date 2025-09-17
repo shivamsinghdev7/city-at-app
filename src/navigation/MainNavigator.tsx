@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { MainTabParamList, RootStackParamList } from '../types';
@@ -38,26 +39,36 @@ const MainTabNavigator: React.FC = () => {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName = '';
+          let iconFamily = 'Material';
 
           switch (route.name) {
             case 'Home':
-              iconName = 'home';
+              iconName = 'home-outline';
+              iconFamily = 'MC';
               break;
             case 'Services':
-              iconName = 'build';
+              iconName = 'wrench-outline';
+              iconFamily = 'MC';
               break;
             case 'Stores':
-              iconName = 'store';
+              iconName = 'storefront-outline';
+              iconFamily = 'MC';
               break;
             case 'Orders':
-              iconName = 'shopping-bag';
+              iconName = 'shopping-outline';
+              iconFamily = 'MC';
               break;
             case 'Profile':
-              iconName = 'person';
+              iconName = 'account-outline';
+              iconFamily = 'MC';
               break;
           }
 
-          return <Icon name={iconName} size={size} color={color} />;
+          return iconFamily === 'MC' ? (
+            <MCIcon name={iconName} size={size} color={color} />
+          ) : (
+            <Icon name={iconName} size={size} color={color} />
+          );
         },
         tabBarActiveTintColor: '#007AFF',
         tabBarInactiveTintColor: 'gray',
